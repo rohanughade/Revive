@@ -13,9 +13,6 @@ interface MessageDao {
     @Insert
     suspend fun insertMessage(message: Message)
 
-    @Delete
-    suspend fun deleteMessage(message: Message)
-
     @Query("select * from Message where sender = :sender order by timestamp desc")
      fun getMessageBySender(sender: String): Flow<List<Message>>
 
@@ -24,4 +21,15 @@ interface MessageDao {
 
      @Query("select count(id) from Message")
       suspend fun getCount():Int
+
+      @Query("delete from Message where timestamp < :expiryTime")
+      suspend fun deleteMessagesByTime(expiryTime: Long)
+
+      @Delete
+      suspend fun deleteMessage(message: Message)
+
+      @Query("delete from message where sender = :sender")
+      suspend fun deleteBySender(sender: String)
+
+
 }

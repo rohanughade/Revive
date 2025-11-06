@@ -69,5 +69,9 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("androidx.work:work-runtime-ktx:2.11.0")
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+
 
 }

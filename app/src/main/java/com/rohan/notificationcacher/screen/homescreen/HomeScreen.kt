@@ -1,20 +1,34 @@
 package com.rohan.notificationcacher.screen.homescreen
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,7 +58,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.rohan.notificationcacher.screen.messagescreen.SelectTopBar
 import com.rohan.notificationcacher.util.randomColor
 import kotlinx.coroutines.delay
 
@@ -56,6 +72,8 @@ fun HomeScreen(navController: NavHostController) {
     var isSearchActive by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    var selection by remember { mutableStateOf(false) }
+    val selectedList by viewModel.selectedList.collectAsState()
 
     val filteredUsers  = remember(users,searchText) {
         if (searchText.isBlank()) users
@@ -71,6 +89,14 @@ fun HomeScreen(navController: NavHostController) {
             focusRequester.requestFocus()
         }
     }
+    BackHandler(true) {
+        if (selection){
+            selection = false
+            viewModel.clearSelection()
+        }else{
+            navController.popBackStack()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -82,6 +108,13 @@ fun HomeScreen(navController: NavHostController) {
                     onCloseClick = { isSearchActive = false },
                     focusRequester = focusRequester
                 )
+            }else if (selection){
+                SelectTopBar(
+                    selectCount = selectedList.size,
+                    onCancel = {selection = false
+                               viewModel.clearSelection()},
+                    onDelete = { viewModel.deleteByUser()}
+                )
             } else {
                 DefaultTopBar(onSearchClick = { isSearchActive = true }
                 )
@@ -91,7 +124,9 @@ fun HomeScreen(navController: NavHostController) {
 
     ) { padding ->
 
-        Box(modifier = Modifier.fillMaxSize().padding(padding)){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)){
             if (filteredUsers.isEmpty()){
                 Box(
                     modifier = Modifier
@@ -103,9 +138,15 @@ fun HomeScreen(navController: NavHostController) {
             }else{
                 LazyColumn (){
                   items(filteredUsers){user->
-                      Item(user) {
-                          navController.navigate("message/$it")
-                      }
+                      Item(
+                          user = user,
+                          onNavigate = { navController.navigate("message/$it") },
+                          onItemSelect = {if (selection)viewModel.toggleSelection(user = user)},
+                          onLongSelect = { selection = true
+                                         viewModel.toggleSelection(user)},
+                          selectionMode = selection,
+                          isSelected = selectedList.contains(user)
+                      )
                   }
                 }
             }
@@ -171,32 +212,104 @@ fun SearchAppBar(searchText: String,
 }
 
 @Composable
-fun Item(user: String,onItemSelect:(String)-> Unit) {
-    val color = randomColor()
-    Card (modifier = Modifier
-        .fillMaxWidth()
-        .padding(7.dp, 6.dp)
-        .clickable(onClick = { onItemSelect(user) }),
-        elevation = CardDefaults.cardElevation(6.dp),
-        shape = RoundedCornerShape(10.dp)
-        ){
-        Row (modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically){
+fun Item(user: String
+         , onNavigate:(String)-> Unit,
+         onItemSelect:(String)-> Unit
+         , onLongSelect:(String)-> Unit,
+         selectionMode: Boolean,
+         isSelected: Boolean) {
+    var color = remember {
+        mutableStateOf(randomColor())}
 
-            Box(modifier = Modifier
-                .padding(12.dp)
-                .size(50.dp)
-                .clip(CircleShape)
-                .background(color = color)){
-                Text(text = user[0].toString().uppercase(), fontSize = 35.sp,color=Color.White,
-                    textAlign = TextAlign.Center, modifier = Modifier.align(Alignment.Center))
+        val offsetDp by animateDpAsState(
+            targetValue = if (selectionMode) 20.dp else 0.dp,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            ),
+            label = "offset"
+        )
+        Row(
+            modifier = Modifier
+            .fillMaxWidth().padding(start = 8.dp)
+            , verticalAlignment = Alignment.CenterVertically
+        ) {
+            AnimatedVisibility(
+                visible = selectionMode,
+                enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(
+                    animationSpec = tween(
+                        300
+                    )
+                ),
+                exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally(
+                    animationSpec = tween(
+                        300
+                    )
+                )
+            ) {
+                Box(
+                    modifier = Modifier.width(30.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Icon(
+                        imageVector = if (isSelected) Icons.Filled.CheckCircle else Icons.Outlined.RadioButtonUnchecked,
+                        contentDescription = null,
+                        tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
             }
-            Text(text = user, fontSize = 20.sp , fontWeight = FontWeight.Bold,modifier = Modifier.padding(8.dp))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(offsetDp)
+                    .padding(7.dp, 6.dp)
+                    .combinedClickable(
+                        onClick = {
+                            if (selectionMode) {
+                                onItemSelect(user)
+                            } else {
+                                onNavigate(user)
+                            }
+                        },
+                        onLongClick = { onLongSelect(user) }
+                    ),
+                elevation = CardDefaults.cardElevation(2.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(35.dp)
+                            .clip(CircleShape)
+                            .background(color =color.value)
+                    ) {
+                        Text(
+                            text = user[0].toString().uppercase(),
+                            fontSize = 22.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    Text(
+                        text = user,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
         }
     }
 
-
-
-}
 
 
 

@@ -22,3 +22,12 @@ fun makeImageUrl(context: Context, bitmap: Bitmap, filename: String): String{
     stream.close()
     return file.absolutePath
 }
+
+fun toneDownColor(color: Color,alpha: Float = 0.6f,factor: Float = 0.8f): Color{
+    return color.copy(
+        red = color.red*factor,
+        green = color.green*factor,
+        blue = color.blue*factor,
+        alpha = alpha
+    )
+}

@@ -13,6 +13,11 @@ class MessageRepository @Inject constructor(private val dao: MessageDao){
 
     suspend fun insertMessage(message: Message) = dao.insertMessage(message)
 
-    suspend fun  deleteMessage(message: Message) = dao.deleteMessage(message);
+    suspend fun  deleteMessageByTime(expiryTime: Long) = dao.deleteMessagesByTime(expiryTime)
+
     suspend fun getCount() = dao.getCount()
+
+    suspend fun deleteMessage(message: Message) = dao.deleteMessage(message)
+
+    suspend fun deleteMessageByUser(sender: String) = dao.deleteBySender(sender)
 }

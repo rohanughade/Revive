@@ -17,6 +17,9 @@ class HomeViewModel @Inject constructor(private val repository: MessageRepositor
    private var _users = MutableStateFlow<List<String>>(emptyList())
     val users: StateFlow<List<String>> = _users
 
+    private var _selectedList = MutableStateFlow<Set<String>>(emptySet())
+    val selectedList: StateFlow<Set<String>> = _selectedList
+
     init {
       getusers()
 
@@ -29,6 +32,30 @@ class HomeViewModel @Inject constructor(private val repository: MessageRepositor
             }
 
         }
+    }
+
+    fun toggleSelection(user: String){
+        val current = _selectedList.value.toMutableSet()
+        if (current.contains(user)){
+            current.remove(user)
+        }else{
+            current.add(user)
+        }
+        _selectedList.value = current
+    }
+
+    fun clearSelection(){
+        _selectedList.value  = emptySet()
+    }
+
+    fun deleteByUser(){
+        viewModelScope.launch {
+            _selectedList.value.forEach {
+                repository.deleteMessageByUser(it)
+            }
+            _selectedList.value = emptySet()
+        }
+
     }
 
 }
