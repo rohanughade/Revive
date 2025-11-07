@@ -120,6 +120,20 @@ class MyNotificationListener: NotificationListenerService() {
 
         val senderInfo = parseSenderInfo(title = title)
 
+        val twoMinutesAgo = System.currentTimeMillis() - (2 * 60 * 1000)
+        val existingMessage = withContext(Dispatchers.IO) {
+            messageRepository.getMessageByContent(
+                sender =  senderInfo.groupOrContact,
+                message = message,
+                fromTime = twoMinutesAgo
+            )
+        }
+
+        if (existingMessage != null) {
+            Log.d(TAG, "Duplicate detected in database (within 2 minutes)")
+            return
+        }
+
         val mesg =
             Message(
                 sender = senderInfo.groupOrContact,

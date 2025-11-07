@@ -18,4 +18,5 @@ class MessageRepository @Inject constructor(private val dao: MessageDao){
     suspend fun deleteMessage(message: Message) = dao.deleteMessage(message)
 
     suspend fun deleteMessageByUser(sender: String) = dao.deleteBySender(sender)
+    suspend fun getMessageByContent(sender: String, message: String, fromTime: Long) = dao.getMessageByContent(sender,message,fromTime)
 }

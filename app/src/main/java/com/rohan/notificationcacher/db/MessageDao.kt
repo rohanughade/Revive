@@ -25,8 +25,11 @@ interface MessageDao {
       @Delete
       suspend fun deleteMessage(message: Message)
 
-      @Query("delete from message where sender = :sender")
+      @Query("delete from Message where sender = :sender")
       suspend fun deleteBySender(sender: String)
+
+    @Query("SELECT * FROM Message WHERE sender = :sender AND message = :message AND timestamp > :fromTime LIMIT 1")
+    suspend fun getMessageByContent(sender: String, message: String, fromTime: Long): Message?
 
 
 }
