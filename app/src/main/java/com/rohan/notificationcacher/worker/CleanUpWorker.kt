@@ -1,6 +1,7 @@
 package com.rohan.notificationcacher.worker
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.rohan.notificationcacher.repositery.MessageRepository
@@ -10,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
+@HiltWorker
 class CleanUpWorker @AssistedInject constructor(
     @Assisted appContext: Context
     , @Assisted params: WorkerParameters,

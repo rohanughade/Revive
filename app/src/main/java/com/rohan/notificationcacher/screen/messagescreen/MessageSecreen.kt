@@ -58,13 +58,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.rohan.notificationcacher.db.model.Message
-import com.rohan.notificationcacher.util.randomColor
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageScreen(navController: NavHostController,user: String, onGoBack: () -> Unit) {
+fun MessageScreen(
+    navController: NavHostController,
+    user: String, color: Color,
+    onGoBack: () -> Unit
+) {
 
     val viewModel: MessageViewModel = hiltViewModel()
     LaunchedEffect(user) {
@@ -73,7 +76,7 @@ fun MessageScreen(navController: NavHostController,user: String, onGoBack: () ->
 
     val selectionList by viewModel.selectedMessages.collectAsState()
     var selectionMode by remember { mutableStateOf(false) }
-    var color by remember {mutableStateOf(randomColor()) }
+    var color by remember {mutableStateOf(color) }
 
     BackHandler(enabled = true) {
         if (selectionMode){
@@ -246,12 +249,14 @@ fun MessageBubble(message: Message,
                         .fillMaxWidth(0.5f)
                         .padding(5.dp)
                 ) {
-                    Text(
-                        text = message.sender,
-                        fontSize = 12.sp,
-                        color = Color.White,
-                        modifier = Modifier.padding(2.dp, 5.dp)
-                    )
+                    message.senderName?.let {
+                        Text(
+                            text = message.senderName,
+                            fontSize = 12.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(2.dp, 5.dp)
+                        )
+                    }
                     if (message.imgUrl != null) {
                         AsyncImage(
                             model = imageModel,
@@ -263,6 +268,7 @@ fun MessageBubble(message: Message,
 
                         }
                     } else {
+                        Spacer(modifier = Modifier.height(3.dp))
                         Text(text = message.message, fontSize = 15.sp, color = Color.White)
                     }
                     Spacer(modifier = Modifier.height(3.dp))

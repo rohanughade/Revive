@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,11 +21,14 @@ fun MainScreen() {
            composable("home"){
                HomeScreen(navController)
            }
-            composable("message/{user}", arguments = listOf(
-                navArgument("user"){type = NavType.StringType}
+            composable("message/{user}/{color}", arguments = listOf(
+                navArgument("user"){type = NavType.StringType},
+                navArgument("color"){type = NavType.IntType}
             )){
                 val user = it.arguments?.getString("user")?:""
-                MessageScreen(navController,user) {
+                val colorInt = it.arguments?.getInt("color")
+                val color = colorInt?.let { Color(it) }
+                MessageScreen(navController,user,color?:Color.Gray) {
                     navController.popBackStack()
                 }
             }

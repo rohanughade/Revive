@@ -1,6 +1,8 @@
 package com.rohan.notificationcacher.di
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -8,18 +10,22 @@ import androidx.work.WorkManager
 import com.rohan.notificationcacher.worker.CleanUpWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @HiltAndroidApp
-class Base: Application() {
-
+class Base: Application(){
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
     override fun onCreate() {
         super.onCreate()
-
-
+        WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(workerFactory = workerFactory).build())
         cleanupWorker()
     }
 
-    private fun cleanupWorker(){
+
+
+
+    private fun cleanupWorker() {
         val workerManager = WorkManager.getInstance(this)
 
         val constraints = Constraints.Builder()
@@ -36,8 +42,9 @@ class Base: Application() {
             "message cleanup",
             ExistingPeriodicWorkPolicy.KEEP,
             workBuilder
-            )
+        )
 
 
     }
 }
+

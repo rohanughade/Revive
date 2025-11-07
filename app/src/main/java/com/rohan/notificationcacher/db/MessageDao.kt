@@ -19,9 +19,6 @@ interface MessageDao {
     @Query("select sender from Message group by sender order by max(timestamp) desc")
      fun getSenders(): Flow<List<String>>
 
-     @Query("select count(id) from Message")
-      suspend fun getCount():Int
-
       @Query("delete from Message where timestamp < :expiryTime")
       suspend fun deleteMessagesByTime(expiryTime: Long)
 

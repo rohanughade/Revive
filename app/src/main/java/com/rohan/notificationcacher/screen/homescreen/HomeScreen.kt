@@ -53,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -74,6 +75,7 @@ fun HomeScreen(navController: NavHostController) {
     val focusRequester = remember { FocusRequester() }
     var selection by remember { mutableStateOf(false) }
     val selectedList by viewModel.selectedList.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val filteredUsers  = remember(users,searchText) {
         if (searchText.isBlank()) users
@@ -93,6 +95,8 @@ fun HomeScreen(navController: NavHostController) {
         if (selection){
             selection = false
             viewModel.clearSelection()
+        }else if(isSearchActive){
+            isSearchActive = false
         }else{
             navController.popBackStack()
         }
@@ -127,7 +131,7 @@ fun HomeScreen(navController: NavHostController) {
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(padding)){
-            if (filteredUsers.isEmpty()){
+            if (!isLoading && filteredUsers.isEmpty()){
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -140,7 +144,8 @@ fun HomeScreen(navController: NavHostController) {
                   items(filteredUsers){user->
                       Item(
                           user = user,
-                          onNavigate = { navController.navigate("message/$it") },
+                          onNavigate = {user,color->
+                              navController.navigate("message/${user}/${color.toArgb()}") },
                           onItemSelect = {if (selection)viewModel.toggleSelection(user = user)},
                           onLongSelect = { selection = true
                                          viewModel.toggleSelection(user)},
@@ -213,12 +218,12 @@ fun SearchAppBar(searchText: String,
 
 @Composable
 fun Item(user: String
-         , onNavigate:(String)-> Unit,
+         , onNavigate:(String, Color)-> Unit,
          onItemSelect:(String)-> Unit
          , onLongSelect:(String)-> Unit,
          selectionMode: Boolean,
          isSelected: Boolean) {
-    var color = remember {
+    var color by remember {
         mutableStateOf(randomColor())}
 
         val offsetDp by animateDpAsState(
@@ -231,7 +236,7 @@ fun Item(user: String
         )
         Row(
             modifier = Modifier
-            .fillMaxWidth().padding(start = 8.dp)
+                .fillMaxWidth()
             , verticalAlignment = Alignment.CenterVertically
         ) {
             AnimatedVisibility(
@@ -269,7 +274,7 @@ fun Item(user: String
                             if (selectionMode) {
                                 onItemSelect(user)
                             } else {
-                                onNavigate(user)
+                                onNavigate(user,color)
                             }
                         },
                         onLongClick = { onLongSelect(user) }
@@ -289,7 +294,7 @@ fun Item(user: String
                             .padding(12.dp)
                             .size(35.dp)
                             .clip(CircleShape)
-                            .background(color =color.value)
+                            .background(color = color)
                     ) {
                         Text(
                             text = user[0].toString().uppercase(),

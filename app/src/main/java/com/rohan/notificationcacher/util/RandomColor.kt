@@ -14,7 +14,7 @@ fun randomColor(): Color {
     return Color(r,g,b)
 }
 
-fun makeImageUrl(context: Context, bitmap: Bitmap, filename: String): String{
+suspend fun makeImageUrl(context: Context, bitmap: Bitmap, filename: String): String{
     val file = File(context.cacheDir, "$filename.png")
     val stream = FileOutputStream(file)
     bitmap.compress(Bitmap.CompressFormat.PNG,100, stream)

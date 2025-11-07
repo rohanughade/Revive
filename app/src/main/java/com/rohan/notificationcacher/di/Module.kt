@@ -1,6 +1,8 @@
 package com.rohan.notificationcacher.di
 
 import android.content.Context
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
 import com.rohan.notificationcacher.db.MessageDao
 import com.rohan.notificationcacher.db.MessageDb
@@ -19,11 +21,11 @@ object Module {
     @Singleton
     fun getdb(@ApplicationContext context: Context): MessageDb{
         return Room.databaseBuilder(
-            context,
-            MessageDb::class.java,
-            "message_db"
+                context,
+                MessageDb::class.java,
+                "message_db"
 
-        ).addMigrations(MessageDb.MIGRATION_1_2)
+            ).fallbackToDestructiveMigration(true)
             .build()
     }
 
