@@ -24,7 +24,7 @@ fun SplashScreen() {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Revive", fontSize = 40.sp, color = Color.White)
                 Spacer(modifier = Modifier.height(20.dp))
-                Text("Getting your messages back...", fontSize = 16.sp, color = Color.Gray)
+                Text("Getting your messages...", fontSize = 16.sp, color = Color.Gray)
             }
         }
     }
