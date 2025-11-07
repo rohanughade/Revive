@@ -175,7 +175,6 @@ class MyNotificationListener: NotificationListenerService() {
             .replace(Regex("\\(\\s*\\d+\\s*(new\\s+)?messages?\\s*\\)", RegexOption.IGNORE_CASE), "")
             .replace(Regex("from\\s+\\d+\\s+chats?", RegexOption.IGNORE_CASE), "")
             .replace(Regex("\\s*new messages?$", RegexOption.IGNORE_CASE), "")
-            .replace(Regex("[:\\-|~]\\s*\\S.*$"), "")
             .trim()
 
     }
@@ -196,7 +195,7 @@ class MyNotificationListener: NotificationListenerService() {
 
     private fun parseSenderInfo(title: String): SenderInfo{
         val cleaned = normalizeSender(title = title)
-        val delimiterIndex = cleaned.indexOfAny(charArrayOf(':', '~', '-', '|'))
+        val delimiterIndex = cleaned.indexOfAny(charArrayOf(':', '~'))
         return if (delimiterIndex != -1){
             val groupName = cleaned.substring(0,delimiterIndex).trim()
             val individualName = cleaned.substring(delimiterIndex+1).trim()

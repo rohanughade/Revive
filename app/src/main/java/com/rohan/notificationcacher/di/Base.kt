@@ -13,36 +13,48 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidApp
-class Base: Application(){
+class Base: Application(), Configuration.Provider{
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() =  Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
     override fun onCreate() {
         super.onCreate()
-        WorkManager.initialize(this, Configuration.Builder().setWorkerFactory(workerFactory = workerFactory).build())
         cleanupWorker()
+
     }
 
 
 
 
     private fun cleanupWorker() {
-        val workerManager = WorkManager.getInstance(this)
+        try {
+            val workerManager = WorkManager.getInstance(this)
 
-        val constraints = Constraints.Builder()
-            .setRequiresBatteryNotLow(true)
-            .setRequiresStorageNotLow(true)
-            .build()
+            val constraints = Constraints.Builder()
+                .setRequiresBatteryNotLow(true)
+                .setRequiresStorageNotLow(true)
+                .build()
 
 
-        val workBuilder = PeriodicWorkRequestBuilder<CleanUpWorker>(1, TimeUnit.DAYS)
-            .setConstraints(constraints)
-            .build()
+            val workBuilder = PeriodicWorkRequestBuilder<CleanUpWorker>(1, TimeUnit.DAYS)
+                .setConstraints(constraints)
+                .build()
 
-        workerManager.enqueueUniquePeriodicWork(
-            "message cleanup",
-            ExistingPeriodicWorkPolicy.KEEP,
-            workBuilder
-        )
+
+
+            workerManager.enqueueUniquePeriodicWork(
+                "message cleanup",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workBuilder
+            )
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
 
 
     }

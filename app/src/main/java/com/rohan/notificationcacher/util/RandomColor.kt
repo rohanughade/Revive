@@ -1,7 +1,9 @@
 package com.rohan.notificationcacher.util
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.provider.Settings
 import androidx.compose.ui.graphics.Color
 import java.io.File
 import java.io.FileOutputStream
@@ -14,7 +16,7 @@ fun randomColor(): Color {
     return Color(r,g,b)
 }
 
-suspend fun makeImageUrl(context: Context, bitmap: Bitmap, filename: String): String{
+ fun makeImageUrl(context: Context, bitmap: Bitmap, filename: String): String{
     val file = File(context.cacheDir, "$filename.png")
     val stream = FileOutputStream(file)
     bitmap.compress(Bitmap.CompressFormat.PNG,100, stream)
@@ -23,11 +25,13 @@ suspend fun makeImageUrl(context: Context, bitmap: Bitmap, filename: String): St
     return file.absolutePath
 }
 
-fun toneDownColor(color: Color,alpha: Float = 0.6f,factor: Float = 0.8f): Color{
-    return color.copy(
-        red = color.red*factor,
-        green = color.green*factor,
-        blue = color.blue*factor,
-        alpha = alpha
-    )
+fun isNotificationAccessGranted(context: Context): Boolean{
+    val enabledListner = Settings.Secure.getString(context.contentResolver,"enabled_notification_listeners")
+    return enabledListner?.contains(context.packageName) == true
+}
+
+fun requestPermission(context: Context){
+    val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    context.startActivity(intent)
 }
