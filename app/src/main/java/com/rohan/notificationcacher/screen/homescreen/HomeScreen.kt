@@ -97,6 +97,7 @@ fun HomeScreen(navController: NavHostController) {
             viewModel.clearSelection()
         }else if(isSearchActive){
             isSearchActive = false
+            searchText = ""
         }else{
             navController.popBackStack()
         }
@@ -109,7 +110,8 @@ fun HomeScreen(navController: NavHostController) {
                 SearchAppBar(
                     searchText = searchText,
                     onSearchTextChange = { searchText = it },
-                    onCloseClick = { isSearchActive = false },
+                    onCloseClick = { isSearchActive = false
+                                   searchText = ""},
                     focusRequester = focusRequester
                 )
             }else if (selection){
