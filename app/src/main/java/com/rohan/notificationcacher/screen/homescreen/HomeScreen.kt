@@ -264,11 +264,12 @@ fun Item(user: String
                     )
                 }
             }
-            Card(
+            Row (
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(offsetDp)
                     .padding(7.dp, 6.dp)
+                    .clip(RoundedCornerShape(2.dp))
                     .combinedClickable(
                         onClick = {
                             if (selectionMode) {
@@ -279,8 +280,6 @@ fun Item(user: String
                         },
                         onLongClick = { onLongSelect(user) }
                     ),
-                elevation = CardDefaults.cardElevation(2.dp),
-                shape = RoundedCornerShape(10.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -291,8 +290,8 @@ fun Item(user: String
 
                     Box(
                         modifier = Modifier
-                            .padding(12.dp)
-                            .size(35.dp)
+                            .padding(8.dp)
+                            .size(40.dp)
                             .clip(CircleShape)
                             .background(color = color)
                     ) {
@@ -306,7 +305,7 @@ fun Item(user: String
                     }
                     Text(
                         text = user,
-                        fontSize = 15.sp,
+                        fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(8.dp)
                     )

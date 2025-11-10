@@ -246,7 +246,7 @@ fun MessageBubble(message: Message,
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
+                        .fillMaxWidth(0.6f)
                         .padding(5.dp)
                 ) {
                     message.senderName?.let {

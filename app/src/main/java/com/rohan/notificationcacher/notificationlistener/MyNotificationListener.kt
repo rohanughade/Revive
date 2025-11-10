@@ -42,7 +42,8 @@ class MyNotificationListener: NotificationListenerService() {
             "missed call",
             "declined call",
             "call in progress",
-            "incoming call"
+            "incoming voice call",
+            "incoming video call"
         )
         private val STATUS_PATTERNS = setOf(
             "checking for new messages",
@@ -120,7 +121,7 @@ class MyNotificationListener: NotificationListenerService() {
 
         val senderInfo = parseSenderInfo(title = title)
 
-        val twoMinutesAgo = System.currentTimeMillis() - (2 * 60 * 1000)
+        val twoMinutesAgo = System.currentTimeMillis() - (60 * 60 * 1000*2)
         val existingMessage = withContext(Dispatchers.IO) {
             messageRepository.getMessageByContent(
                 sender =  senderInfo.groupOrContact,
@@ -130,7 +131,7 @@ class MyNotificationListener: NotificationListenerService() {
         }
 
         if (existingMessage != null) {
-            Log.d(TAG, "Duplicate detected in database (within 2 minutes)")
+            Log.d(TAG, "Duplicate detected in database")
             return
         }
 
