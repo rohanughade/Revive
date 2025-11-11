@@ -270,7 +270,7 @@ fun Item(user: String
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(offsetDp)
-                    .padding(7.dp, 6.dp)
+                    .padding(7.dp, 2.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .combinedClickable(
                         onClick = {
