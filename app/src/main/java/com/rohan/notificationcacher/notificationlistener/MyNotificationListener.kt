@@ -57,6 +57,9 @@ class MyNotificationListener: NotificationListenerService() {
             "recording voice message",
             "sync..."
         )
+        private val TITLE_PATTERNS = setOf(
+            "deleting messages"
+        )
         private val GROUP_PATTERNS = setOf(
             "you were added",
             "joined using this group's invite link",
@@ -109,12 +112,13 @@ class MyNotificationListener: NotificationListenerService() {
             }
         }
         if (title.isBlank() || message.isBlank())return
+        if (!validateTitle(title = title))return
 
-        val notoficationId = "${sbn.id}_${sbn.postTime}_${sbn.key}"
-        if (processNotificationId.contains(notoficationId)){
+        val notificationId = "${sbn.id}_${sbn.postTime}_${sbn.key}"
+        if (processNotificationId.contains(notificationId)){
             return
         }
-        processNotificationId.add(notoficationId)
+        processNotificationId.add(notificationId)
 
         val validationResult = validateMessage(message)
         if (!validationResult)return
@@ -205,6 +209,11 @@ class MyNotificationListener: NotificationListenerService() {
 
         if (lowerMessage == "message deleted" || lowerMessage == "checking for new messages") return false
 
+        return true
+    }
+    private fun validateTitle(title: String): Boolean{
+        val lowerTitle = title.lowercase().trim()
+        if (TITLE_PATTERNS.any{lowerTitle.contains(it)})return false
         return true
     }
 
