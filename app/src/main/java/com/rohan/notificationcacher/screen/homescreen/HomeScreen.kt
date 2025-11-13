@@ -143,7 +143,7 @@ fun HomeScreen(navController: NavHostController) {
                 }
             }else{
                 LazyColumn (){
-                  items(filteredUsers){user->
+                  items(filteredUsers, key = {it}){user->
                       Item(
                           user = user,
                           onNavigate = {user,color->
@@ -225,8 +225,7 @@ fun Item(user: String
          , onLongSelect:(String)-> Unit,
          selectionMode: Boolean,
          isSelected: Boolean) {
-    var color by remember {
-        mutableStateOf(randomColor())}
+    var color = remember(user) { randomColor()}
 
         val offsetDp by animateDpAsState(
             targetValue = if (selectionMode) 20.dp else 0.dp,
@@ -271,7 +270,6 @@ fun Item(user: String
                     .fillMaxWidth()
                     .offset(offsetDp)
                     .padding(7.dp, 2.dp)
-                    .clip(RoundedCornerShape(2.dp))
                     .combinedClickable(
                         onClick = {
                             if (selectionMode) {

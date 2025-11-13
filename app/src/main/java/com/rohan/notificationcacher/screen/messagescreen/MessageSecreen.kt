@@ -51,12 +51,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.rohan.notificationcacher.db.model.Message
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -140,7 +143,7 @@ fun MessageScreen(
             .padding(padding)
             .clipToBounds()){
             LazyColumn (reverseLayout = true){
-                items(messages){
+                items(messages, key = {it.id}){
                     MessageBubble(
                         message = it,
                         selectionMode = selectionMode,
@@ -204,7 +207,7 @@ fun MessageBubble(message: Message,
 
     Box(   modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp, 4.dp)
+        .padding(10.dp)
   ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -239,9 +242,7 @@ fun MessageBubble(message: Message,
                         onLongClick = {
                             onLongSelect(message)
                         })
-                    .padding(10.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.Gray)
+                    .background(Color.Gray,RoundedCornerShape(10.dp))
 
             ) {
                 Column(
@@ -259,9 +260,12 @@ fun MessageBubble(message: Message,
                     }
                     if (message.imgUrl != null) {
                         AsyncImage(
-                            model = imageModel,
-                            contentDescription = null,
-                            modifier = Modifier.size(200.dp)
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(imageModel)
+                                .size(200,200)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = null
                         )
                         message.message.let {
                             Text(text = it, fontSize = 12.sp, color = Color.White)
