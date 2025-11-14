@@ -55,10 +55,14 @@ class MyNotificationListener: NotificationListenerService() {
             "typing...",
             "recording audio...",
             "recording voice message",
-            "sync..."
+            "sync...",
+            "logged out of device",
+            "downloading document",
+            "sending message..."
         )
         private val TITLE_PATTERNS = setOf(
-            "deleting messages"
+            "deleting messages",
+            "downloading document"
         )
         private val GROUP_PATTERNS = setOf(
             "you were added",
