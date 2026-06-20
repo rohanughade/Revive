@@ -1,5 +1,6 @@
 package com.rohan.notificationcacher.screen.homescreen
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -147,7 +148,7 @@ fun HomeScreen(navController: NavHostController) {
                       Item(
                           user = user,
                           onNavigate = {user,color->
-                              navController.navigate("message/${user}/${color.toArgb()}") },
+                              navController.navigate("message/${Uri.encode(user)}/${color.toArgb()}") },
                           onItemSelect = {if (selection)viewModel.toggleSelection(user = user)},
                           onLongSelect = { selection = true
                                          viewModel.toggleSelection(user)},
@@ -296,7 +297,7 @@ fun Item(user: String
                             .background(color = color)
                     ) {
                         Text(
-                            text = user[0].toString().uppercase(),
+                            text = user.firstOrNull()?.uppercase()?: "?",
                             fontSize = 22.sp,
                             color = Color.White,
                             textAlign = TextAlign.Center,

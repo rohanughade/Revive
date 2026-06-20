@@ -17,6 +17,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import java.util.Collections
 
 
 private const val TAG = "MyNotificationListener"
@@ -26,7 +27,7 @@ class MyNotificationListener: NotificationListenerService() {
     lateinit var messageRepository: MessageRepository
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
-    val processNotificationId = mutableSetOf<String>()
+    val processNotificationId = Collections.synchronizedSet( mutableSetOf<String>())
     companion object {
         private val SUMMARY_MESSAGE_PATTERN =
             Regex("\\d+\\s+new\\s+messages?", RegexOption.IGNORE_CASE)
@@ -129,7 +130,7 @@ class MyNotificationListener: NotificationListenerService() {
 
         val senderInfo = parseSenderInfo(title = title)
 
-        val twoMinutesAgo = System.currentTimeMillis() - (60 * 60 * 1000*2)
+        val twoMinutesAgo = System.currentTimeMillis() - (2*60 * 60 * 1000)
         val existingMessage = withContext(Dispatchers.IO) {
             messageRepository.getMessageByContent(
                 sender =  senderInfo.groupOrContact,

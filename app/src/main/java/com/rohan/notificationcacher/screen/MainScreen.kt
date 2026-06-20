@@ -1,5 +1,6 @@
 package com.rohan.notificationcacher.screen
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ fun MainScreen() {
                 navArgument("user"){type = NavType.StringType},
                 navArgument("color"){type = NavType.IntType}
             )){
-                val user = it.arguments?.getString("user")?:""
+                val user = Uri.decode( it.arguments?.getString("user")?:"")
                 val colorInt = it.arguments?.getInt("color")
                 val color = colorInt?.let { Color(it) }
                 MessageScreen(navController,user,color?:Color.Gray) {

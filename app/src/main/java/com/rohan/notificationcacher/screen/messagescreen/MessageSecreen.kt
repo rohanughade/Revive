@@ -96,6 +96,7 @@ fun MessageScreen(
                 SelectTopBar(
                     selectCount = selectionList.size,
                     onCancel = {selectionMode = false
+                        viewModel.clearSelection()
                                },
                     onDelete = {viewModel.deleteSelectedMessages()}
                 )
