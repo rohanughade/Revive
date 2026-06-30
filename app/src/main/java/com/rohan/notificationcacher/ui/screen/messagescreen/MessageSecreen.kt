@@ -1,4 +1,4 @@
-package com.rohan.notificationcacher.screen.messagescreen
+package com.rohan.notificationcacher.ui.screen.messagescreen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -60,7 +60,7 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.rohan.notificationcacher.db.model.Message
+import com.rohan.notificationcacher.data.db.model.Message
 import java.text.SimpleDateFormat
 import java.util.Locale
 

@@ -1,4 +1,4 @@
-package com.rohan.notificationcacher.db.model
+package com.rohan.notificationcacher.data.db.model
 
 data class SenderInfo(
     val groupOrContact: String,

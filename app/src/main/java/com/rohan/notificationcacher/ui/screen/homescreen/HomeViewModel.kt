@@ -1,4 +1,4 @@
-package com.rohan.notificationcacher.screen.homescreen
+package com.rohan.notificationcacher.ui.screen.homescreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

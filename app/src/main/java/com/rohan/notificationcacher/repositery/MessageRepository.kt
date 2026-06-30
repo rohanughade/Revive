@@ -1,7 +1,7 @@
 package com.rohan.notificationcacher.repositery
 
-import com.rohan.notificationcacher.db.MessageDao
-import com.rohan.notificationcacher.db.model.Message
+import com.rohan.notificationcacher.data.db.MessageDao
+import com.rohan.notificationcacher.data.db.model.Message
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

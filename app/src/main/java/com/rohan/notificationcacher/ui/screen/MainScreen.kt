@@ -1,4 +1,4 @@
-package com.rohan.notificationcacher.screen
+package com.rohan.notificationcacher.ui.screen
 
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,8 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.rohan.notificationcacher.screen.homescreen.HomeScreen
-import com.rohan.notificationcacher.screen.messagescreen.MessageScreen
+import com.rohan.notificationcacher.ui.screen.homescreen.HomeScreen
+import com.rohan.notificationcacher.ui.screen.messagescreen.MessageScreen
 
 @Composable
 fun MainScreen() {

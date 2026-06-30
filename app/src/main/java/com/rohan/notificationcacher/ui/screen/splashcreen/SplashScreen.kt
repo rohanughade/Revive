@@ -1,4 +1,4 @@
-package com.rohan.notificationcacher.screen.splashcreen
+package com.rohan.notificationcacher.ui.screen.splashcreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

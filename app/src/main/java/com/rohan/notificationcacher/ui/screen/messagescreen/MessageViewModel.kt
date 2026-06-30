@@ -1,8 +1,8 @@
-package com.rohan.notificationcacher.screen.messagescreen
+package com.rohan.notificationcacher.ui.screen.messagescreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rohan.notificationcacher.db.model.Message
+import com.rohan.notificationcacher.data.db.model.Message
 import com.rohan.notificationcacher.repositery.MessageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

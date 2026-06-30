@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import com.rohan.notificationcacher.db.model.Message
-import com.rohan.notificationcacher.db.model.SenderInfo
+import com.rohan.notificationcacher.data.db.model.Message
+import com.rohan.notificationcacher.data.db.model.SenderInfo
 import com.rohan.notificationcacher.repositery.MessageRepository
 import com.rohan.notificationcacher.util.makeImageUrl
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,7 +63,9 @@ class MyNotificationListener: NotificationListenerService() {
         )
         private val TITLE_PATTERNS = setOf(
             "deleting messages",
-            "downloading document"
+            "downloading document",
+            "WhatsApp",
+            "WB"
         )
         private val GROUP_PATTERNS = setOf(
             "you were added",
@@ -130,7 +132,7 @@ class MyNotificationListener: NotificationListenerService() {
 
         val senderInfo = parseSenderInfo(title = title)
 
-        val twoMinutesAgo = System.currentTimeMillis() - (2*60 * 60 * 1000)
+        val twoMinutesAgo = System.currentTimeMillis() - (2*60 * 1000)
         val existingMessage = withContext(Dispatchers.IO) {
             messageRepository.getMessageByContent(
                 sender =  senderInfo.groupOrContact,
@@ -156,6 +158,13 @@ class MyNotificationListener: NotificationListenerService() {
         withContext(Dispatchers.IO){
             messageRepository.insertMessage(mesg)
             Log.d(TAG, "notificationProcess: update")
+
+        }
+        try {
+            cancelNotification(sbn.key)
+
+        }catch (_: Exception){
+            Log.e(TAG, "notificationProcess: error in canceling notification" )
 
         }
 

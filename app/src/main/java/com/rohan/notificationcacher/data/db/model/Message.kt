@@ -1,4 +1,4 @@
-package com.rohan.notificationcacher.db.model
+package com.rohan.notificationcacher.data.db.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

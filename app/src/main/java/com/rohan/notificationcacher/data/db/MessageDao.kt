@@ -1,10 +1,10 @@
-package com.rohan.notificationcacher.db
+package com.rohan.notificationcacher.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.rohan.notificationcacher.db.model.Message
+import com.rohan.notificationcacher.data.db.model.Message
 import kotlinx.coroutines.flow.Flow
 
 @Dao

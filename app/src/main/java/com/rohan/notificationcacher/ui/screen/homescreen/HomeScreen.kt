@@ -1,23 +1,16 @@
-package com.rohan.notificationcacher.screen.homescreen
+package com.rohan.notificationcacher.ui.screen.homescreen
 
 import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,9 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.RadioButtonUnchecked
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,12 +47,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.rohan.notificationcacher.screen.messagescreen.SelectTopBar
+import com.rohan.notificationcacher.ui.screen.messagescreen.SelectTopBar
 import com.rohan.notificationcacher.util.randomColor
 import kotlinx.coroutines.delay
 
@@ -220,100 +210,78 @@ fun SearchAppBar(searchText: String,
 }
 
 @Composable
-fun Item(user: String
-         , onNavigate:(String, Color)-> Unit,
-         onItemSelect:(String)-> Unit
-         , onLongSelect:(String)-> Unit,
-         selectionMode: Boolean,
-         isSelected: Boolean) {
-    var color = remember(user) { randomColor()}
+fun Item(
+    user: String,
+    onNavigate: (String, Color) -> Unit,
+    onItemSelect: (String) -> Unit,
+    onLongSelect: (String) -> Unit,
+    selectionMode: Boolean,
+    isSelected: Boolean
+) {
+    val color = remember(user) { randomColor() }
 
-        val offsetDp by animateDpAsState(
-            targetValue = if (selectionMode) 20.dp else 0.dp,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            ),
-            label = "offset"
-        )
-        Row(
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selectionMode && isSelected) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+        } else {
+            Color.Transparent
+        },
+        label = "itemBackground"
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(backgroundColor)
+            .combinedClickable(
+                onClick = {
+                    if (selectionMode) onItemSelect(user) else onNavigate(user, color)
+                },
+                onLongClick = { onLongSelect(user) }
+            )
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-            , verticalAlignment = Alignment.CenterVertically
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(color),
+            contentAlignment = Alignment.Center
         ) {
-            AnimatedVisibility(
-                visible = selectionMode,
-                enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(
-                    animationSpec = tween(
-                        300
-                    )
-                ),
-                exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally(
-                    animationSpec = tween(
-                        300
-                    )
-                )
-            ) {
-                Box(
-                    modifier = Modifier.width(30.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
+            AnimatedContent(targetState = selectionMode && isSelected, label = "avatarState") { selected ->
+                if (selected) {
                     Icon(
-                        imageVector = if (isSelected) Icons.Filled.CheckCircle else Icons.Outlined.RadioButtonUnchecked,
-                        contentDescription = null,
-                        tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
-                        modifier = Modifier.size(30.dp)
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = "Selected",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
-                }
-            }
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(offsetDp)
-                    .padding(7.dp, 2.dp)
-                    .combinedClickable(
-                        onClick = {
-                            if (selectionMode) {
-                                onItemSelect(user)
-                            } else {
-                                onNavigate(user,color)
-                            }
-                        },
-                        onLongClick = { onLongSelect(user) }
-                    ),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(color = color)
-                    ) {
-                        Text(
-                            text = user.firstOrNull()?.uppercase()?: "?",
-                            fontSize = 22.sp,
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                } else {
                     Text(
-                        text = user,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(8.dp)
+                        text = user.firstOrNull()?.uppercase() ?: "?",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
                     )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Text(
+            text = user,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
     }
+}
+
 
 
 
